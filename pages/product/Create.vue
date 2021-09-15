@@ -13,6 +13,7 @@
 <script>
 import ProductForm from "~/components/ProductForm.vue";
 export default {
+  // redirect to login page if unauthenticated
   middleware: "auth",
   components: { ProductForm },
   data() {

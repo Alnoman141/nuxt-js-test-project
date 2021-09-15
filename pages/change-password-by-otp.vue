@@ -72,12 +72,15 @@ export default {
     };
   },
   beforeCreate() {
+    // redirect to home page if user is authenticated
     if (this.$store.state.auth) this.$router.push("/");
   },
   methods: {
     async register() {
         await this.$store.dispatch("chnagePassworByOTP", this.formData);
     },
+
+    // check empty field validation
     getValidation(e) {
       if (e.target.value == "") {
         e.target.classList.add("error");
@@ -85,6 +88,8 @@ export default {
         e.target.classList.remove("error");
       }
     },
+
+    // close alret message
     close() {
       this.$store.commit("errors", false);
       this.$store.commit("success", false);

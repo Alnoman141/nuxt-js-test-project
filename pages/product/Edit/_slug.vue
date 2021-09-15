@@ -32,6 +32,7 @@ export default {
     },
 
     methods: {
+      // load requested product by slug
       async getProduct(slug){
         await this.$axios.get('product/show/' + slug, this.$store.state.config).then(({ data }) => {
           this.formData = data.data;

@@ -9,19 +9,19 @@
           class="form-control"
           id="name"
           placeholder="Enter Product Name"
-          
+          required
         />
       </div>
       <div class="mb-3">
         <label for="category" class="form-label">Product Category</label>
-        <select class="form-select" id="category" v-model="formData.category_id" >
+        <select class="form-select" id="category" required v-model="formData.category_id" >
           <option disabled value="">Choose...</option>
           <option v-for="(category, index) in $store.state.categories" :key="index" :value="category.id">{{ category.name }}</option>
         </select>
       </div>
       <div class="mb-3">
         <label for="brand" class="form-label">Product Brand</label>
-        <select class="form-select" id="brand" v-model="formData.brand_id" >
+        <select class="form-select" id="brand" required v-model="formData.brand_id" >
           <option disabled value="">Choose...</option>
           <option v-for="(brand, index) in $store.state.brands" :key="index" :value="brand.id">{{ brand.name }}</option>
         </select>
@@ -29,6 +29,7 @@
       <div class="mb-3">
         <label for="email" class="form-label">Product Price</label>
         <input
+          required
           v-model="formData.price"
           type="text"
           class="form-control"
@@ -75,13 +76,18 @@ export default {
         }
     },
     created(){
+      // load all the brands store
       this.$store.dispatch('getBrands');
+
+      // load all the categories from store
       this.$store.dispatch('getCategories');
       
     },
     mounted(){
     },
     methods: {
+
+      // check validations
       validate(){
         for (let key in this.formData) {
           if (this.formData[key] === "") {
@@ -91,6 +97,8 @@ export default {
           }
         }
       },
+
+      // upload images
       uploadImage(e){
         const files = e.target.files;
         files.forEach(image => {
@@ -108,6 +116,8 @@ export default {
           });
         });
       },
+
+      // remove a image
       remove(image, index){
         console.log(image);
           this.$axios.post('product/delete/image', image, this.$store.state.config).then(response => {
@@ -116,12 +126,16 @@ export default {
             }
           })        
       },
+
+      // create new product
       saveData(){
         this.validate();
         if(this.valid){
           this.$store.dispatch('saveProduct', this.formData);
         }
       },
+
+      // update product
       updateData(){
         this.validate();
         if(this.valid){

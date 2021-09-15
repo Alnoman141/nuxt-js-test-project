@@ -36,6 +36,7 @@ export default {
     };
   },
   beforeCreate() {
+    // redirect to home page if user is authenticated
     if (this.$store.state.auth) this.$router.push("/");
   },
   methods: {

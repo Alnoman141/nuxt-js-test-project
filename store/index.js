@@ -78,6 +78,7 @@ export const actions = {
     commit("config", this.$cookies.get("authToken"));
   },
 
+  // login method
   async login(context, { email, password }) {
     if (email === "") {
       context.commit("errors", true);
@@ -116,6 +117,8 @@ export const actions = {
       if (token !== null) this.$cookies.set("authToken", token);
     }
   },
+
+  // register method
   register(context, formData) {
     for (let key in formData) {
       if (formData[key] === "") {
@@ -147,6 +150,8 @@ export const actions = {
         });
     }
   },
+
+  // logout method
   async logout(context) {
     await axios
       .put(context.state.api_url + "user/logout", null, context.state.config)
@@ -161,6 +166,7 @@ export const actions = {
     this.$cookies.remove("authToken");
   },
 
+  // otp send method
   async sendOTP(context, data) {
     if (data.email === "") {
       context.commit("errors", true);
@@ -181,6 +187,8 @@ export const actions = {
         });
     }
   },
+
+  // change password by opt method
   chnagePassworByOTP(context, formData){
     for (let key in formData) {
         if (formData[key] === "") {
@@ -211,6 +219,8 @@ export const actions = {
           });
       }
   },
+
+  // load all the brands
   async getBrands(context){
     
     await this.$axios.get('brands',context.state.config).then(({ data }) => {
@@ -223,6 +233,8 @@ export const actions = {
       );
     });
   },
+
+  // load all the categories
   async getCategories(context){
     await this.$axios.get('categories', context.state.config).then(({ data }) => {
       context.commit('categories', data.categories);
@@ -235,6 +247,7 @@ export const actions = {
     });
   },
   
+  // load all the products
   async getProducts(context, keyword){
     await this.$axios.get('/products?keyword='+keyword).then(({ data }) => {
       context.commit('products', data.data);
@@ -247,6 +260,7 @@ export const actions = {
     });
   },
 
+  // create a new product
   async saveProduct(context, data){
     this.$axios.post('product/store', data, context.state.config).then(response => {
       context.commit("success", true);
@@ -261,6 +275,7 @@ export const actions = {
     });
   },
 
+  // get a single product information
   async getProduct(context, slug){
     await this.$axios.get('product/show/' + slug, context.state.config).then(({ data }) => {
       context.commit("product", data.data);
@@ -272,6 +287,8 @@ export const actions = {
       );
     });
   },
+
+  // update a single product information
   async updateProduct(context, data){
     this.$axios.post('product/update/' + data.slug, data, context.state.config).then(response => {
       context.commit("success", true);

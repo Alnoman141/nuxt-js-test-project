@@ -34,6 +34,7 @@
 <script>
 export default {
   methods: {
+    // close alert message
     close() {
       this.$store.commit("errors", false);
       this.$store.commit("success", false);

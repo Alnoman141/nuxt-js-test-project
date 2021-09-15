@@ -62,6 +62,8 @@ export default {
     async getProducts(){
       await this.$store.dispatch('getProducts', this.keyword);
     },
+
+    // product search
     handleFilter(){
       this.getProducts();
     }
