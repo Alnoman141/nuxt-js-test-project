@@ -71,6 +71,9 @@ export default {
       },
     };
   },
+  beforeCreate() {
+    if (this.$store.state.auth) this.$router.push("/");
+  },
   methods: {
     async register() {
         await this.$store.dispatch("chnagePassworByOTP", this.formData);

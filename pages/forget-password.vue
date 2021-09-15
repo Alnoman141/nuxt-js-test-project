@@ -35,6 +35,9 @@ export default {
       },
     };
   },
+  beforeCreate() {
+    if (this.$store.state.auth) this.$router.push("/");
+  },
   methods: {
     sendOTP() {
       this.$store.dispatch("sendOTP", this.formData);

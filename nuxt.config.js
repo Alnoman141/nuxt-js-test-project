@@ -36,15 +36,28 @@ export default {
   modules: [
     '@nuxtjs/axios',
     'cookie-universal-nuxt',
+    '@nuxtjs/proxy',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   publicRuntimeConfig: {
     axios: {
         // baseURL: process.env.BASE_URL||'http://mypremo-api.audacityit.work/api/'
-        baseURL: process.env.BASE_URL || 'http://127.0.0.1:8000/api/'
+        baseURL: process.env.BASE_URL || 'http://127.0.0.1:8000/api/',
+        proxy: true
     }
 },
+axios: {
+  proxy: true
+},
+
+proxy: {
+  '/api/': { target: 'http://localhost:3000/', pathRewrite: {'^/api/': ''}, changeOrigin: true }
+},
+
+// server: {
+//   port: 0
+// },
 
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

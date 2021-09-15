@@ -32,6 +32,7 @@
 <script>
 import ShowMessage from '../components/ShowMessage.vue';
 export default {
+  // middleware: 'auth',
   components: { ShowMessage },
   data() {
     return {
@@ -46,6 +47,10 @@ export default {
       this.$store.dispatch("login", this.formData);
     },
   },
+  beforeCreate() {
+    if (this.$store.state.auth) this.$router.push("/");
+  },
+
 };
 </script>
 

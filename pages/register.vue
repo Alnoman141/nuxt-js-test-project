@@ -60,6 +60,7 @@
 <script>
 import ShowMessage from '~/components/ShowMessage.vue'
 export default {
+  middleware: 'auth',
   components: { ShowMessage },
   data() {
     return {
@@ -74,10 +75,14 @@ export default {
       success: false,
     };
   },
+  beforeCreate() {
+    if (this.$store.state.auth) this.$router.push("/");
+  },
   methods: {
     async register() {
         await this.$store.dispatch("register", this.formData);
     },
+
     getValidation(e) {
       if (e.target.value == "") {
         e.target.classList.add("error");

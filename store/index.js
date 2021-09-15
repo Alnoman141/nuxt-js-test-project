@@ -11,7 +11,12 @@ export const state = () => ({
   errors: false,
   errorMsg: "",
   success: false,
-  successMsg: ""
+  successMsg: "",
+  config: {},
+  brands: [],
+  categories: [],
+  products: [],
+  product: {},
 });
 
 export const mutations = {
@@ -24,6 +29,7 @@ export const mutations = {
     if (authToken !== undefined) {
       state.auth_token = authToken;
       state.auth = true;
+      // state.config = authToken;
     }
   },
   updateRegister: state => {
@@ -47,11 +53,29 @@ export const mutations = {
   },
   successMsg(state, successMsg) {
     state.successMsg = successMsg;
-  }
+  },
+  config(state, token){
+    state.config = {
+      headers: { Authorization: `Bearer ${token}`, }
+    };
+  },
+  brands(state, brands){
+    state.brands = brands;
+  },
+  categories(state, categories){
+    state.categories = categories;
+  },
+  products(state, products){
+    state.products = products;
+  },
+  product(state, product){
+    state.product = product;
+  },
 };
 export const actions = {
   async nuxtServerInit({ dispatch, commit }) {
     commit("setToken");
+    commit("config", this.$cookies.get("authToken"));
   },
 
   async login(context, { email, password }) {
@@ -71,10 +95,13 @@ export const actions = {
         .then(response => {
           const authUser = response.data.data;
           context.commit("authUser", authUser);
+          
           if (response.data.access_token !== undefined) {
             token = response.data.access_token;
             context.commit("login", response.data.access_token);
+            context.commit("config", response.data.access_token)
             $nuxt.$router.push("/");
+            
           }
         })
         .catch(error => {
@@ -83,7 +110,7 @@ export const actions = {
             context.commit("errors", true);
             context.commit("errorMsg", "Email and password doesn't match !!");
           } else {
-            alert(errors[0]);
+            context.commit("errorMsg", errors[0]);
           }
         });
       if (token !== null) this.$cookies.set("authToken", token);
@@ -121,12 +148,8 @@ export const actions = {
     }
   },
   async logout(context) {
-    const token = this.$cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` }
-    };
     await axios
-      .put(context.state.api_url + "user/logout", null, config)
+      .put(context.state.api_url + "user/logout", null, context.state.config)
       .then(response => {
         context.commit("logout");
         $nuxt.$router.push("/");
@@ -159,7 +182,6 @@ export const actions = {
     }
   },
   chnagePassworByOTP(context, formData){
-      console.log(formData);
     for (let key in formData) {
         if (formData[key] === "") {
           context.commit("errors", true);
@@ -188,5 +210,80 @@ export const actions = {
             );
           });
       }
-  }
+  },
+  async getBrands(context){
+    
+    await this.$axios.get('brands',context.state.config).then(({ data }) => {
+      context.commit('brands', data.brands);
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        JSON.stringify(error.response.data.error)
+      );
+    });
+  },
+  async getCategories(context){
+    await this.$axios.get('categories', context.state.config).then(({ data }) => {
+      context.commit('categories', data.categories);
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        JSON.stringify(error.response.data.error)
+      );
+    });
+  },
+  
+  async getProducts(context, keyword){
+    await this.$axios.get('/products?keyword='+keyword).then(({ data }) => {
+      context.commit('products', data.data);
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        JSON.stringify(error.response.data.error)
+      );
+    });
+  },
+
+  async saveProduct(context, data){
+    this.$axios.post('product/store', data, context.state.config).then(response => {
+      context.commit("success", true);
+      context.commit("successMsg", "Product Created Successful");
+      this.$router.push('/');
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        JSON.stringify(error.response.data.error)
+      );
+    });
+  },
+
+  async getProduct(context, slug){
+    await this.$axios.get('product/show/' + slug, context.state.config).then(({ data }) => {
+      context.commit("product", data.data);
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        JSON.stringify(error.response.data.error)
+      );
+    });
+  },
+  async updateProduct(context, data){
+    this.$axios.post('product/update/' + data.slug, data, context.state.config).then(response => {
+      context.commit("success", true);
+      context.commit("successMsg", "Product Updated Successful");
+      this.$router.push('/');
+    }).catch(error => {
+      context.commit("errors", true);
+      context.commit(
+        "errorMsg",
+        'product not updated'
+      );
+    });
+  },
+
 };
